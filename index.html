@@ -4,119 +4,183 @@
   <meta charset="UTF-8">
   <title>Menvy Showroom Invoice</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
       color: #000;
-      font-size: 13px;
+      font-size: 18px;
+      line-height: 1.6;
+      margin: 20px auto;
+      padding: 20px;
+      width: 100%;
+      max-width: 800px;
+      border: 2px solid #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
     }
-    h2, h3 {
+
+    h2 {
       text-align: center;
-      margin: 5px 0;
+      font-size: 36px;
+      margin: 0;
     }
+
+    h3 {
+      text-align: center;
+      font-size: 26px;
+      margin: 10px 0;
+      text-decoration: underline;
+    }
+
     .shop-info {
       text-align: center;
-      font-size: 11px;
-      margin-bottom: 10px;
+      font-size: 18px;
+      margin-bottom: 15px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
+
+    .content {
+      flex: 1;
     }
-    table, th, td {
-      border: 1px solid #000;
+
+    .item {
+      border-bottom: 1px dashed #bbb;
+      padding: 8px 0;
+      font-size: 20px;
     }
-    th, td {
-      padding: 4px;
-      text-align: center;
-    }
-    .no-border {
-      border: none;
-    }
+
     input, select {
-      width: 100%;
-      box-sizing: border-box;
       border: none;
+      border-bottom: 1px solid #888;
       text-align: center;
+      font-size: 20px;
+      background: transparent;
+      margin: 3px 5px;
+      width: auto;
     }
+
     button {
       margin-top: 10px;
-      padding: 5px 10px;
-      font-size: 13px;
+      padding: 8px 16px;
+      font-size: 18px;
       cursor: pointer;
     }
+
+    .summary {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .thankyou {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 15px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    /* PRINT MODE */
     @media print {
-      button { display: none; }
-      input, select { border: none; }
-      body { margin: 0; }
+      @page {
+        size: A4;
+        margin: 20mm;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        border: none;
+        height: 100%;
+        transform: scale(0.95); /* Slight scaling to ensure fit on one page */
+        transform-origin: top center;
+      }
+
+      button {
+        display: none;
+      }
+
+      input, select {
+        border: none;
+        font-size: 22px;
+      }
+
+      h2 {
+        font-size: 40px;
+      }
+
+      h3 {
+        font-size: 30px;
+      }
+
+      .shop-info {
+        font-size: 20px;
+      }
+
+      .item {
+        font-size: 22px;
+      }
+
+      .summary {
+        font-size: 26px;
+        margin-top: 20px;
+      }
+
+      .thankyou {
+        font-size: 32px;
+        margin-top: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <h2><strong>Menvy Showroom</strong></h2>
-  <div class="shop-info">
-    📍 Shop No. 12, Ground Floor, SM Tower, Ichakhada Bazar, Magura
+  <div class="content">
+    <h2><strong>Menvy Showroom</strong></h2>
+    <div class="shop-info">
+      📍 Shop No. 12, Ground Floor, SM Tower, Ichakhada Bazar, Magura
+    </div>
+
+    <h3>Invoice</h3>
+
+    <p style="font-size:20px;">
+      <strong>Date:</strong> <span id="date"></span><br>
+      <strong>Customer Name:</strong> <input type="text" id="customerName" placeholder="Enter name"><br>
+      <strong>Contact No:</strong> <input type="text" id="contact" placeholder="Optional">
+    </p>
+
+    <div id="items"></div>
+
+    <div style="text-align:center;">
+      <button onclick="addItem()">➕ Add Item</button>
+      <button onclick="calculateTotal(false)">🧾 Calculate (Normal)</button>
+      <button onclick="calculateTotal(true)">💰 Calculate Profit</button>
+      <button onclick="window.print()">🖨️ Print Invoice</button>
+    </div>
+
+    <div class="summary">
+      <p id="grandTotal">Grand Total: 0</p>
+      <p id="totalProfit">Total Profit: 0</p>
+    </div>
   </div>
 
-  <h3>Invoice</h3>
-
-  <p>
-    <strong>Date:</strong> <span id="date"></span><br>
-    <strong>Customer Name:</strong> <input type="text" id="customerName" placeholder="Enter name"><br>
-    <strong>Contact No:</strong> <input type="text" id="contact" placeholder="Optional">
-  </p>
-
-  <table id="invoiceTable">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Qty</th>
-        <th>Price</th>
-        <th>Discount (%)</th>
-        <th>Total</th>
-        <th>Buying Price</th>
-        <th>Profit</th>
-        <th class="no-border"></th>
-      </tr>
-    </thead>
-    <tbody id="tableBody">
-      <tr>
-        <td>
-          <select class="product">
-            <option value="Shirt">Shirt</option>
-            <option value="T-shirt">T-shirt</option>
-            <option value="Jacket">Jacket</option>
-            <option value="Pant">Pant</option>
-            <option value="Trouser">Trouser</option>
-          </select>
-        </td>
-        <td><input type="number" class="qty" value="1" min="1"></td>
-        <td><input type="number" class="price" value="0" min="0"></td>
-        <td><input type="number" class="discount" value="0" min="0" max="100"></td>
-        <td class="total">0</td>
-        <td><input type="number" class="buying" value="0" min="0"></td>
-        <td class="profit">0</td>
-        <td><button onclick="removeRow(this)">X</button></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <button onclick="addRow()">➕ Add Item</button>
-  <button onclick="calculateTotal()">🧾 Calculate</button>
-  <button onclick="window.print()">🖨️ Print Invoice</button>
-
-  <h3 id="grandTotal">Grand Total: 0</h3>
-  <h4 id="totalProfit">Total Profit: 0</h4>
+  <div class="thankyou">
+    Thank You for Shopping with Menvy Showroom<br>
+  </div>
 
   <script>
     document.getElementById("date").textContent = new Date().toLocaleDateString();
 
-    function addRow() {
-      const tbody = document.getElementById("tableBody");
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>
+    function addItem() {
+      const container = document.getElementById("items");
+      const div = document.createElement("div");
+      div.classList.add("item");
+      div.innerHTML = `
+        <div>Product:
           <select class="product">
             <option value="Shirt">Shirt</option>
             <option value="T-shirt">T-shirt</option>
@@ -124,48 +188,57 @@
             <option value="Pant">Pant</option>
             <option value="Trouser">Trouser</option>
           </select>
-        </td>
-        <td><input type="number" class="qty" value="1" min="1"></td>
-        <td><input type="number" class="price" value="0" min="0"></td>
-        <td><input type="number" class="discount" value="0" min="0" max="100"></td>
-        <td class="total">0</td>
-        <td><input type="number" class="buying" value="0" min="0"></td>
-        <td class="profit">0</td>
-        <td><button onclick="removeRow(this)">X</button></td>
+        </div>
+        <div>Price: <input type="number" class="price" value="0" min="0"></div>
+        <div>Qty: <input type="number" class="qty" value="1" min="1"></div>
+        <div>Discount (%): <input type="number" class="discount" value="0" min="0" max="100"></div>
+        <div>Buying Price: <input type="number" class="buying" value="0" min="0"></div>
+        <div>Total: <span class="total">0</span></div>
+        <div>Profit: <span class="profit">0</span></div>
+        <button onclick="removeItem(this)">X</button>
       `;
-      tbody.appendChild(row);
+      container.appendChild(div);
     }
 
-    function removeRow(btn) {
-      btn.parentElement.parentElement.remove();
-      calculateTotal();
+    function removeItem(btn) {
+      btn.parentElement.remove();
+      calculateTotal(false);
     }
 
-    function calculateTotal() {
+    function calculateTotal(withProfit) {
       let grandTotal = 0;
       let totalProfit = 0;
 
-      document.querySelectorAll("#tableBody tr").forEach(row => {
-        const qty = parseFloat(row.querySelector(".qty").value) || 0;
-        const price = parseFloat(row.querySelector(".price").value) || 0;
-        const discountPercent = parseFloat(row.querySelector(".discount").value) || 0;
-        const buying = parseFloat(row.querySelector(".buying").value) || 0;
+      document.querySelectorAll(".item").forEach(item => {
+        const qty = parseFloat(item.querySelector(".qty").value) || 0;
+        const price = parseFloat(item.querySelector(".price").value) || 0;
+        const discount = parseFloat(item.querySelector(".discount").value) || 0;
+        const buying = parseFloat(item.querySelector(".buying").value) || 0;
 
-        const subtotal = qty * price;
-        const discountAmount = subtotal * (discountPercent / 100);
-        const total = subtotal - discountAmount;
-        const profit = qty * (price - buying);
+        // discount applied on selling price
+        const discountedPrice = price - (price * (discount / 100));
+        const total = qty * discountedPrice;
 
-        row.querySelector(".total").textContent = total.toFixed(2);
-        row.querySelector(".profit").textContent = profit.toFixed(2);
+        let profit = 0;
+        if (withProfit) {
+          profit = qty * (discountedPrice - buying);
+        }
+
+        item.querySelector(".total").textContent = total.toFixed(2);
+        item.querySelector(".profit").textContent = withProfit ? profit.toFixed(2) : "0";
 
         grandTotal += total;
         totalProfit += profit;
       });
 
       document.getElementById("grandTotal").textContent = "Grand Total: " + grandTotal.toFixed(2);
-      document.getElementById("totalProfit").textContent = "Total Profit: " + totalProfit.toFixed(2);
+      document.getElementById("totalProfit").textContent = withProfit
+        ? "Total Profit: " + totalProfit.toFixed(2)
+        : "Total Profit: Not Calculated";
     }
+
+    // Add one default item
+    addItem();
   </script>
 </body>
 </html>
