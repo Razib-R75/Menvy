@@ -6,116 +6,137 @@
 <style>
   /* ========== SCREEN VIEW ========== */
   body {
-    font-family: Arial, sans-serif;
+    font-family: monospace;
     width: 90%;
     max-width: 600px;
-    margin: 20px auto;
+    margin: 10px auto;
     color: #000;
     font-size: 14px;
+    line-height: 1.4;
   }
-  h2, h3 { text-align: center; margin: 5px 0; }
-  .shop-info { text-align: center; font-size: 12px; margin-bottom: 8px; }
-  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-  th, td { border: 1px solid #000; padding: 6px; text-align: center; font-size: 13px; }
-  input, select { width: 100%; border: 1px solid #ccc; padding: 3px; text-align: center; font-size: 13px; box-sizing: border-box; }
-  button { font-size: 13px; padding: 6px 10px; margin-top: 8px; cursor: pointer; }
-  .thank { text-align: center; margin-top: 10px; font-size: 12px; border-top: 1px dashed #000; padding-top: 6px; }
 
-  /* ========== PRINT VIEW (2.2" / 58mm paper) ========== */
+  h2, h3 {
+    text-align: center;
+    margin: 4px 0;
+  }
+
+  input, select {
+    width: 100%;
+    font-family: monospace;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    margin: 2px 0;
+    padding: 3px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+
+  button {
+    font-size: 13px;
+    padding: 6px 10px;
+    margin-top: 8px;
+    cursor: pointer;
+  }
+
+  .thank {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 12px;
+    border-top: 1px dashed #000;
+    padding-top: 5px;
+  }
+
+  .item {
+    border-bottom: 1px dashed #999;
+    margin: 5px 0;
+    padding-bottom: 5px;
+  }
+
+  /* ========== PRINT VIEW (Thermal 2.2") ========== */
   @media print {
-    body { width: 58mm; font-family: "Courier New", monospace; font-size: 10px; margin: 0; }
-    input, select { border: none; padding: 0; font-size: 10px; }
-    th, td { border: 1px solid #000; padding: 2px; font-size: 9px; }
-    h2, h3 { margin: 3px 0; }
-    button, #profitToggle { display: none; }
-    .thank { font-size: 9px; margin-top: 5px; border-top: 1px dashed #000; padding-top: 4px; }
+    body {
+      width: 58mm;
+      font-family: "Courier New", monospace;
+      font-size: 10px;
+      margin: 0;
+    }
+
+    input, select, button, #profitToggle {
+      display: none;
+    }
+
+    .thank {
+      font-size: 9px;
+      margin-top: 4px;
+      border-top: 1px dashed #000;
+      padding-top: 3px;
+    }
+
+    .item {
+      border-bottom: 1px dashed #000;
+      margin-bottom: 4px;
+      padding-bottom: 2px;
+    }
   }
 </style>
 </head>
 <body>
 
-<h2><strong>Menvy Showroom</strong></h2>
-<div class="shop-info">
+<h2>Menvy Showroom</h2>
+<div style="text-align:center; font-size:11px;">
   Shop No. 12, Ground Floor, SM Tower<br>
   Ichakhada Bazar, Magura
 </div>
 
 <h3>Invoice</h3>
 
-<p><strong>Date:</strong> <span id="date"></span></p>
-<p><strong>Name:</strong> <input id="customerName" placeholder="Customer"></p>
-<p><strong>Phone:</strong> <input id="contact" placeholder="Optional"></p>
+<p>Date: <span id="date"></span></p>
+<p>Name: <input id="customerName" placeholder="Customer name"></p>
+<p>Phone: <input id="contact" placeholder="Optional"></p>
 
 <label><input type="checkbox" id="profitToggle" onchange="toggleProfit()"> Show Profit</label>
 
-<table id="invoiceTable">
-  <thead>
-    <tr>
-      <th>Item</th>
-      <th>Qty</th>
-      <th>Rate</th>
-      <th>Disc%</th>
-      <th>Total</th>
-      <th class="buyingHead">Buy</th>
-      <th class="profitHead">Profit</th>
-    </tr>
-  </thead>
-  <tbody id="tableBody">
-    <tr>
-      <td>
-        <select class="product">
-          <option>Shirt</option><option>T-shirt</option>
-          <option>Jacket</option><option>Pant</option><option>Trouser</option>
-        </select>
-      </td>
-      <td><input type="number" class="qty" value="1" min="1"></td>
-      <td><input type="number" class="price" value="0" min="0"></td>
-      <td><input type="number" class="discount" value="0" min="0" max="100"></td>
-      <td class="total">0</td>
-      <td><input type="number" class="buying" value="0" min="0"></td>
-      <td class="profit">0</td>
-    </tr>
-  </tbody>
-</table>
+<div id="items"></div>
 
-<button onclick="addRow()">+ Add Item</button>
+<button onclick="addItem()">+ Add Item</button>
 <button onclick="calculateTotal()">= Calculate</button>
 <button onclick="window.print()">🖨️ Print</button>
 
-<h3 id="grandTotal">Grand Total: 0</h3>
+<h4 id="grandTotal">Grand Total: 0</h4>
 <h4 id="totalProfit" style="text-align:right;">Profit: 0</h4>
 
-<div class="thank"> Thank you for shopping with Menvy Showroom! </div>
+<div class="thank">✨ Thank you for shopping with Menvy Showroom! ✨</div>
 
 <script>
 document.getElementById("date").textContent = new Date().toLocaleDateString();
 
 function toggleProfit() {
   const show = document.getElementById("profitToggle").checked;
-  document.querySelectorAll(".buying,.buyingHead,.profit,.profitHead").forEach(el => {
-    el.style.display = show ? "table-cell" : "none";
+  document.querySelectorAll(".buyingInput, .profitText").forEach(el => {
+    el.style.display = show ? "block" : "none";
   });
   document.getElementById("totalProfit").style.display = show ? "block" : "none";
 }
 
-function addRow() {
-  const tbody = document.getElementById("tableBody");
-  const row = document.createElement("tr");
-  row.innerHTML = `
-    <td>
+function addItem() {
+  const itemDiv = document.createElement("div");
+  itemDiv.className = "item";
+  itemDiv.innerHTML = `
+    <p>
+      Item: 
       <select class="product">
         <option>Shirt</option><option>T-shirt</option>
         <option>Jacket</option><option>Pant</option><option>Trouser</option>
       </select>
-    </td>
-    <td><input type="number" class="qty" value="1" min="1"></td>
-    <td><input type="number" class="price" value="0" min="0"></td>
-    <td><input type="number" class="discount" value="0" min="0" max="100"></td>
-    <td class="total">0</td>
-    <td><input type="number" class="buying" value="0" min="0"></td>
-    <td class="profit">0</td>`;
-  tbody.appendChild(row);
-  toggleProfit(); // keep current state
+    </p>
+    <p>Qty: <input type="number" class="qty" value="1" min="1"> 
+    Rate: <input type="number" class="price" value="0" min="0"></p>
+    <p>Disc%: <input type="number" class="discount" value="0" min="0" max="100"> 
+    <span class="totalText">Total: 0</span></p>
+    <p class="buyingInput" style="display:none;">Buy: <input type="number" class="buying" value="0" min="0"></p>
+    <p class="profitText" style="display:none;">Profit: <span class="profit">0</span></p>
+  `;
+  document.getElementById("items").appendChild(itemDiv);
 }
 
 function calculateTotal() {
@@ -123,21 +144,20 @@ function calculateTotal() {
   let totalProfit = 0;
   const showProfit = document.getElementById("profitToggle").checked;
 
-  document.querySelectorAll("#tableBody tr").forEach(row => {
-    const qty = parseFloat(row.querySelector(".qty").value) || 0;
-    const price = parseFloat(row.querySelector(".price").value) || 0;
-    const discount = parseFloat(row.querySelector(".discount").value) || 0;
-    const buying = parseFloat(row.querySelector(".buying").value) || 0;
+  document.querySelectorAll(".item").forEach(item => {
+    const qty = parseFloat(item.querySelector(".qty").value) || 0;
+    const price = parseFloat(item.querySelector(".price").value) || 0;
+    const disc = parseFloat(item.querySelector(".discount").value) || 0;
+    const buying = parseFloat(item.querySelector(".buying").value) || 0;
 
-    // Apply discount to the total
     const subtotal = qty * price;
-    const discountedTotal = subtotal - (subtotal * (discount / 100));
-    const profit = showProfit ? (discountedTotal - (qty * buying)) : 0;
+    const discounted = subtotal - (subtotal * (disc / 100));
+    const profit = showProfit ? (discounted - (qty * buying)) : 0;
 
-    row.querySelector(".total").textContent = discountedTotal.toFixed(2);
-    row.querySelector(".profit").textContent = profit.toFixed(2);
+    item.querySelector(".totalText").textContent = "Total: " + discounted.toFixed(2);
+    item.querySelector(".profit").textContent = profit.toFixed(2);
 
-    grandTotal += discountedTotal;
+    grandTotal += discounted;
     totalProfit += profit;
   });
 
@@ -145,7 +165,8 @@ function calculateTotal() {
   document.getElementById("totalProfit").textContent = "Profit: " + totalProfit.toFixed(2);
 }
 
-toggleProfit(); // Hide profit by default
+toggleProfit();
+addItem();
 </script>
 
 </body>
