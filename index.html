@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Menvy Showroom Invoice</title>
 <style>
+  /* ===== SCREEN VIEW (for editing) ===== */
   body {
     font-family: monospace;
     max-width: 600px;
@@ -52,38 +53,51 @@
     padding-bottom: 5px;
   }
 
-  /* ========== PRINT VIEW (Optimized for Goojprt PT-210) ========== */
+  /* ===== PRINT VIEW (perfect fit for 58mm) ===== */
   @media print {
-    @page { margin: 0; }
-    body {
-      width: 58mm;
+    @page {
+      size: auto;        /* auto height based on content */
+      margin: 0;         /* remove all margins */
+    }
+
+    html, body {
+      width: 58mm;       /* exact paper width */
+      height: auto;      /* content height only */
+      margin: 0;
+      padding: 0;
       font-family: "Courier New", monospace;
-      font-size: 11px;           /* bigger text for readability */
+      font-size: 11px;
       line-height: 1.4;
-      margin: 0 auto;
-      text-align: center;        /* center-align the whole invoice */
+      color: #000;
+      text-align: center;
+      background: #fff;
     }
 
     input, select, button, #profitToggle {
-      display: none;
-    }
-
-    .thank {
-      font-size: 10px;
-      margin-top: 5px;
-      border-top: 1px dashed #000;
-      padding-top: 4px;
+      display: none !important;
     }
 
     .item {
       border-bottom: 1px dashed #000;
-      margin-bottom: 4px;
+      margin: 3px 0;
       padding-bottom: 3px;
-      text-align: left;          /* align details neatly inside items */
+      text-align: left;
     }
 
-    h2 { font-size: 13px; }
-    h3 { font-size: 11px; }
+    h2 { font-size: 13px; margin-bottom: 0; }
+    h3 { font-size: 11px; margin: 2px 0; }
+
+    .thank {
+      font-size: 10px;
+      margin-top: 4px;
+      border-top: 1px dashed #000;
+      padding-top: 3px;
+    }
+
+    #grandTotal, #totalProfit {
+      text-align: right;
+      margin-right: 5px;
+    }
   }
 </style>
 </head>
