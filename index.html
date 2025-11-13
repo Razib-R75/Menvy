@@ -4,15 +4,13 @@
 <meta charset="UTF-8">
 <title>Menvy Showroom Invoice</title>
 <style>
-  /* ========== SCREEN VIEW ========== */
   body {
     font-family: monospace;
-    width: 90%;
     max-width: 600px;
     margin: 10px auto;
     color: #000;
     font-size: 14px;
-    line-height: 1.4;
+    line-height: 1.5;
   }
 
   h2, h3 {
@@ -20,19 +18,21 @@
     margin: 4px 0;
   }
 
+  .center { text-align: center; }
+
   input, select {
     width: 100%;
     font-family: monospace;
-    font-size: 13px;
+    font-size: 14px;
     border: 1px solid #ccc;
-    margin: 2px 0;
-    padding: 3px;
+    margin: 3px 0;
+    padding: 4px;
     text-align: center;
     box-sizing: border-box;
   }
 
   button {
-    font-size: 13px;
+    font-size: 14px;
     padding: 6px 10px;
     margin-top: 8px;
     cursor: pointer;
@@ -52,13 +52,16 @@
     padding-bottom: 5px;
   }
 
-  /* ========== PRINT VIEW (Thermal 2.2") ========== */
+  /* ========== PRINT VIEW (Optimized for Goojprt PT-210) ========== */
   @media print {
+    @page { margin: 0; }
     body {
       width: 58mm;
       font-family: "Courier New", monospace;
-      font-size: 10px;
-      margin: 0;
+      font-size: 11px;           /* bigger text for readability */
+      line-height: 1.4;
+      margin: 0 auto;
+      text-align: center;        /* center-align the whole invoice */
     }
 
     input, select, button, #profitToggle {
@@ -66,24 +69,28 @@
     }
 
     .thank {
-      font-size: 9px;
-      margin-top: 4px;
+      font-size: 10px;
+      margin-top: 5px;
       border-top: 1px dashed #000;
-      padding-top: 3px;
+      padding-top: 4px;
     }
 
     .item {
       border-bottom: 1px dashed #000;
       margin-bottom: 4px;
-      padding-bottom: 2px;
+      padding-bottom: 3px;
+      text-align: left;          /* align details neatly inside items */
     }
+
+    h2 { font-size: 13px; }
+    h3 { font-size: 11px; }
   }
 </style>
 </head>
 <body>
 
 <h2>Menvy Showroom</h2>
-<div style="text-align:center; font-size:11px;">
+<div class="center" style="font-size:11px;">
   Shop No. 12, Ground Floor, SM Tower<br>
   Ichakhada Bazar, Magura
 </div>
@@ -122,19 +129,20 @@ function addItem() {
   const itemDiv = document.createElement("div");
   itemDiv.className = "item";
   itemDiv.innerHTML = `
-    <p>
-      Item: 
+    <p>Item: 
       <select class="product">
         <option>Shirt</option><option>T-shirt</option>
         <option>Jacket</option><option>Pant</option><option>Trouser</option>
       </select>
     </p>
-    <p>Qty: <input type="number" class="qty" value="1" min="1"> 
-    Rate: <input type="number" class="price" value="0" min="0"></p>
-    <p>Disc%: <input type="number" class="discount" value="0" min="0" max="100"> 
-    <span class="totalText">Total: 0</span></p>
-    <p class="buyingInput" style="display:none;">Buy: <input type="number" class="buying" value="0" min="0"></p>
-    <p class="profitText" style="display:none;">Profit: <span class="profit">0</span></p>
+    <p>Qty: <input type="number" class="qty" value="1" min="1">
+     Rate: <input type="number" class="price" value="0" min="0"></p>
+    <p>Disc%: <input type="number" class="discount" value="0" min="0" max="100">
+     <span class="totalText">Total: 0</span></p>
+    <p class="buyingInput" style="display:none;">Buy: 
+     <input type="number" class="buying" value="0" min="0"></p>
+    <p class="profitText" style="display:none;">Profit: 
+     <span class="profit">0</span></p>
   `;
   document.getElementById("items").appendChild(itemDiv);
 }
